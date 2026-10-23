@@ -1,0 +1,19 @@
+﻿benefit_rate,user_share,value,metric,fixed,a_spend_total,vs_cashback_budget_pct,note
+0.5,1.0,4.5,연간 적립 총액(억원),a_spend_total=mid,,0.6,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+0.5,5.0,22.5,연간 적립 총액(억원),a_spend_total=mid,,3.0,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+0.5,10.0,45.0,연간 적립 총액(억원),a_spend_total=mid,,6.0,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+1.0,1.0,9.0,연간 적립 총액(억원),a_spend_total=mid,,1.2,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+1.0,5.0,45.0,연간 적립 총액(억원),a_spend_total=mid,,6.0,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+1.0,10.0,90.0,연간 적립 총액(억원),a_spend_total=mid,,12.1,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+1.5,1.0,13.5,연간 적립 총액(억원),a_spend_total=mid,,1.8,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+1.5,5.0,67.5,연간 적립 총액(억원),a_spend_total=mid,,9.1,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+1.5,10.0,135.0,연간 적립 총액(억원),a_spend_total=mid,,18.1,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+0.5,,10218.0,1인당 연 적립(원),user_share 무관,6.0,,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+1.0,,20436.0,1인당 연 적립(원),user_share 무관,6.0,,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+1.5,,30654.0,1인당 연 적립(원),user_share 무관,6.0,,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+0.5,,15327.0,1인당 연 적립(원),user_share 무관,9.0,,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+1.0,,30654.0,1인당 연 적립(원),user_share 무관,9.0,,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+1.5,,45980.9,1인당 연 적립(원),user_share 무관,9.0,,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+0.5,,20436.0,1인당 연 적립(원),user_share 무관,12.0,,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+1.0,,40871.9,1인당 연 적립(원),user_share 무관,12.0,,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv
+1.5,,61307.9,1인당 연 적립(원),user_share 무관,12.0,,추정·시뮬레이션. 입력값 출처·이름표는 ref/step3_inputs.csv

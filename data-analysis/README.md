@@ -39,6 +39,7 @@ DATA_GO_KR_KEY=여기에_인증키
 | 4 | `python src/inventory.py d1` (d9도 같음) | STEP 0 점검 요약표 | `outputs/tables/00_*.csv` |
 | 5 | `python src/clean_d1.py` | D1 정제 (오타 통일, 기준일 이후 제거, 월 합계) | `data/processed/d1_clean.parquet` |
 | 6 | `python src/industry_evidence.py` | 업종별 동백전 비중 근거표 | `outputs/tables/01_dongbaek_share_by_category.csv` |
+| 7 | `python src/step3_sensitivity.py` | STEP 3 민감도 분석 (입력값: `ref/step3_inputs.csv`) | `outputs/tables/02_*.csv`, `outputs/charts/02_tornado.png` |
 
 - **원본만 없는 경우:** 정제본(`data/processed/d1_clean.parquet`)은 저장소에 있으니, 5번까지 다시 할 필요 없이 **6번부터 바로** 실행할 수 있습니다.
 - **다시 받기 방지:** 이미 받은 원본은 다시 받지 않습니다. 원본은 2026-10-19 한 번 받아 고정하는 원칙이에요.
@@ -60,15 +61,20 @@ data-analysis/
 │  ├─ inventory.py    # STEP 0 점검
 │  ├─ clean_d1.py     # STEP 1 D1 정제
 │  ├─ industry_evidence.py  # STEP 1 업종 판정 근거
+│  ├─ step3_sensitivity.py  # STEP 3 민감도 분석
+│  ├─ sensitivity.py        # 공통 민감도 도구 (low/mid/high 입력표 + 계산 함수)
 │  └─ settings.py · raw_io.py · profiling.py  # 설정·원본 읽기·요약 함수
 ├─ ref/               # 사람이 입력·검토하는 표 (출처 열 포함)
 │  ├─ industry_map.csv          # D1 업종 ↔ 동백전 사용 가능 여부 (초안, 검토 중)
-│  ├─ report_category_map.csv   # 보고서 업종 → D1 업종 연결 (초안)
-│  ├─ dongbaek_stats_bdi2025.csv  # 부산연구원(2025) 보고서 표 옮김
-│  └─ policy.csv                # 동백전 캐시백·한도 이력
+│  ├─ report_category_map.csv   # 보고서 표3-6 업종 → D1 업종 연결 (초안)
+│  ├─ bc_category_map.csv       # 보고서 표4-28 BC카드 업종 → D1 업종 연결 (초안)
+│  ├─ dongbaek_stats_bdi2026.csv  # 부산연구원(2026.3) 보고서 표 옮김
+│  ├─ policy.csv                # 동백전 캐시백·한도 이력
+│  └─ step3_inputs.csv          # STEP 3 입력값 (사실/가정/추정/미확인 이름표)
 ├─ data/raw/          # API 원본 (git 제외)
 ├─ data/processed/    # 정제본
 ├─ outputs/tables/    # 결과표
+├─ outputs/charts/    # 그래프
 ├─ docs/              # 지시서·점검 결과
 └─ tests/
 ```

@@ -107,17 +107,20 @@ def check_response(data: dict, status: int, spec: dict) -> None:
 def period_units(spec: dict, months: list[str]) -> list[tuple[str, dict[str, str]]]:
     """기간을 내려받기 단위로 나눈다.
 
-    입력: 데이터셋 설정(unit: month 또는 period), 'YYYYMM' 월 목록
+    입력: 데이터셋 설정(unit: month, period 또는 snapshot), 'YYYYMM' 월 목록
     출력: (단위 이름, 기간 파라미터에 넣을 값) 목록
-      - month : [("202301", {"ym": "202301"}), ...]
-      - period: [("202301-202606", {"start_ym": "202301", "end_ym": "202606"})]
-    예외: unit 값이 month·period 가 아니면 ValueError
+      - month   : [("202301", {"ym": "202301"}), ...]
+      - period  : [("202301-202606", {"start_ym": "202301", "end_ym": "202606"})]
+      - snapshot: [("snapshot", {})]  기간 없이 현재 상태를 한 번에 받는 API (예: 가맹점 목록)
+    예외: unit 값이 위 셋이 아니면 ValueError
     """
     unit = spec.get("unit", "month")
     if unit == "month":
         return [(ym, {"ym": ym}) for ym in months]
     if unit == "period":
         return [(f"{months[0]}-{months[-1]}", {"start_ym": months[0], "end_ym": months[-1]})]
+    if unit == "snapshot":
+        return [("snapshot", {})]
     raise ValueError(f"알 수 없는 unit: {unit}")
 
 

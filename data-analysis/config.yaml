@@ -101,9 +101,93 @@ datasets:
       count: ["stlm_nocs", "mbl_user_cnt"]
       amount_is_daily_avg: false  # 월간 결제금액 그대로
 
+  d4:
+    title: "한국조폐공사_모바일_가맹점기본정보 (부산은행 = 동백전)"
+    source: "공공데이터포털 15108285"
+    url: "https://apis.data.go.kr/B190001/mobileFranchisesV4/mobileV4"
+    raw_dir: "data/raw/d4"
+    unit: "snapshot"              # 기간 없이 받는 날의 현재 상태 (받은 날짜는 _download_log.json 에 기록)
+    params:
+      returnType: "JSON"
+      "cond[pvsn_inst_cd::EQ]": "I0000014"   # 제공기관 부산은행 (동백전 운영)
+    page_param: "page"
+    size_param: "perPage"
+    page_size: 1000
+    items_path: "data"
+    total_path: "matchCount"
+    # 주요 필드: sale_base_excs_frcs_yn(매출기준 초과 가맹점 여부), bzmn_stts(사업자 상태), crtr_ymd(생성·변경·해지 일자),
+    #            frcs_reg_se(신규/변경/해지), ksic_cd(표준산업분류), emd_cd(법정동 앞 8자리), lat/lot
+
 # 참고 자료(수기 입력 표) 경로
 ref:
-  report_stats: "ref/dongbaek_stats_bdi2025.csv"     # D10 부산연구원 보고서 표
-  report_category_map: "ref/report_category_map.csv" # D10 업종 → D1 업종 연결 (사람 검토)
+  report_stats: "ref/dongbaek_stats_bdi2026.csv"     # D10 부산연구원 보고서 표
+  report_category_map: "ref/report_category_map.csv" # D10 표3-6 업종 → D1 업종 연결 (사람 검토)
+  bc_category_map: "ref/bc_category_map.csv"         # D10 표4-28 BC카드 업종 → D1 업종 연결 (사람 검토)
   industry_map: "ref/industry_map.csv"               # D1 업종 ↔ 동백전 사용 가능 여부 (사람 검토)
   policy: "ref/policy.csv"
+
+# STEP 3 민감도 분석 (src/step3_sensitivity.py). 입력값은 ref/step3_inputs.csv 에서만 바꾼다.
+step3:
+  inputs_path: "ref/step3_inputs.csv"
+  sensitivity_keys: ["a_spend_total", "benefit_rate", "user_share"]
+  outputs:
+    tornado: "outputs/tables/02_sensitivity_tornado.csv"
+    grid: "outputs/tables/02_credit_grid.csv"
+    chart: "outputs/charts/02_tornado.png"
+
+# STEP 1 업종별 동백전 비중 근거 (src/industry_evidence.py)
+# basis 하나 = 보고서 표 하나. periods 의 이름은 보고서 표 파일의 period 값과 같아야 한다.
+# value_is_monthly_avg: true 면 보고서 값(월평균)에 그 기간의 개월 수를 곱해 기간 합계로 만든다.
+evidence:
+  output_path: "outputs/tables/01_dongbaek_share_by_category.csv"
+  bases:
+    - name: "연간(표3-6)"
+      table_id: "표3-6"
+      total_category: "총계"         # 보고서 표의 합계 행 (계산에서 뺌)
+      category_map: "report_category_map"
+      value_is_monthly_avg: false
+      periods:
+        "2023": ["2023-01", "2023-12"]
+        "2024": ["2024-01", "2024-12"]
+      combine: {"유통+음식료품": ["유통", "음식료품"]}  # 보고서 '슈퍼/마트'에 식료품점이 섞였을 수 있어 같이 비교
+    - name: "여름3개월(표4-28)"
+      table_id: "표4-28"
+      total_category: null
+      category_map: "bc_category_map"
+      value_is_monthly_avg: true
+      periods:
+        "2024-06~08": ["2024-06", "2024-08"]
+        "2025-06~08": ["2025-06", "2025-08"]
+      combine: {}
+
+# 동백전 "가입 가능한데 미가입" 가게 수 추정 (src/count_unjoined.py)
+# 결과는 추정이다. 분류표·키워드는 ref/ 의 CSV 를 사람이 고친 뒤 다시 실행한다.
+unjoined:
+  store_path: "data/raw/manual/부산_상가정보_20260630.csv"   # 소상공인시장진흥공단 상가(상권)정보 부산
+  store_reference: "2026-06-30 (파일명 기준, 분기 미확인)"
+  merchant_path: "data/raw/d3/merchants_20260424.csv"        # 공공데이터포털 15088786, 2026-10-22 내려받음
+  merchant_reference: "2026-04-24"
+  merchant_previous_count: 160296                           # 팀 V1.3 N-51 (이름+주소 중복 제거)
+  exclusion_map: "ref/exclusion_map.csv"
+  exclusion_keywords: "ref/exclusion_keywords.csv"
+  name_similarity_min: 0.8        # 애매 일치 기준 (상호 유사도, 0~1). 가정값
+  name_contain_min_len: 3         # 최소 글자 수: 상호 포함 비교(2순위)·같은 구 유일 상호(3순위)에 적용 (짧은 이름 오탐 방지)
+  manual_check_n: 30              # 확인용 표본 수 (불일치·애매 일치 각각)
+  seed: 42
+  # 같은 브랜드의 다른 표기를 하나로 맞춘다 (정규화 뒤 적용, 왼쪽 → 오른쪽)
+  name_aliases:
+    씨유: "cu"
+    지에스25: "gs25"
+    지에스더프레시: "gs더프레시"
+    세븐일레븐: "7eleven"
+    이마트이십사: "이마트24"
+  legal_terms: ["주식회사", "유한회사", "합자회사", "합명회사", "사단법인", "재단법인", "㈜", "(주)", "(유)", "(사)", "(재)"]
+  # 결과를 범위로 보고하는 시나리오
+  # - include_ambiguous: 가입 가능 가게에 넣을 '애매' 유형 (경계, 상호판단, B2B)
+  # - fuzzy_as_joined: 애매 일치를 가입으로 셀지
+  scenarios:
+    - {name: "하한 (B2B 제외)", include_ambiguous: [], fuzzy_as_joined: true}
+    - {name: "하한 (B2B 포함)", include_ambiguous: ["B2B"], fuzzy_as_joined: true}
+    - {name: "상한 (B2B 제외)", include_ambiguous: ["경계", "상호판단"], fuzzy_as_joined: false}
+    - {name: "상한 (B2B 포함)", include_ambiguous: ["경계", "상호판단", "B2B"], fuzzy_as_joined: false}
+  output_dir: "outputs/unjoined"

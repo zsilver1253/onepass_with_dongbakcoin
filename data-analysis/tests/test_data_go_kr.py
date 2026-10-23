@@ -92,6 +92,9 @@ class PeriodUnitsTest(unittest.TestCase):
         params = build_params(spec, {"start_ym": "202301", "end_ym": "202606"}, "26110", 1, 1000)
         self.assertEqual((params["cond[crtr_ym::GTE]"], params["cond[crtr_ym::LTE]"]), ("202301", "202606"))
 
+    def test_snapshot_unit(self) -> None:
+        self.assertEqual(period_units({"unit": "snapshot"}, ["202301", "202606"]), [("snapshot", {})])
+
     def test_unknown_unit_raises(self) -> None:
         with self.assertRaises(ValueError):
             period_units({"unit": "week"}, ["202301"])
